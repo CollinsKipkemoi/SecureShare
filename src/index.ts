@@ -1,6 +1,8 @@
 import express from 'express'
 import initDatabase from './config/init.js'
 import authRouter from './routes/auth.route.js'
+import dotenv from 'dotenv'
+dotenv.config()
 
 
 
