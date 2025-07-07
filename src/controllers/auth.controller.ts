@@ -1,7 +1,7 @@
-
-
 import { Request, Response } from 'express'
 import { registerSchema } from '../validation/user.validation.js'
+import { hashPassword } from '../utils/password.utils.js'
+import db from '../config/database.js'
 
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -11,7 +11,19 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       return
     } else {
       const { email, password } = result.data
-      console.log(`email: ${email}, password: ${password}`) 
+
+      const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email)
+      if (user) {
+        res.status(400).json({ error: 'User already exists' })
+        return
+      }
+
+      const hashedPassword = await hashPassword(password)
+
+      // insert
+      const insertUser = db.prepare('INSERT INTO users (email, password) VALUES (?, ?)')
+      insertUser.run(email, hashedPassword)
+
       res.status(200).json({ message: 'User registered successfully', data: result.data })
       return
     }
