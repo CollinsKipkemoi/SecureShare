@@ -78,3 +78,6 @@ dist
 # Temporary folders
 tmp/
 temp/
+
+# Uploaded files
+uploads/
